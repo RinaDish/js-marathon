@@ -5,9 +5,14 @@ const phoneNumber = '+71234567890';
 
 const getAmountOfA = (string) => string.match(/(?:А|а)/g).length; //The behavior of /[Aa]/g is not expected. So strange =<
 
-const getRow = (firstRow, secondRow) => (firstRow == null || secondRow == null)
-    ? alert('The string(s) is not proper') || null
-    : Math.max(getAmountOfA(firstRow), getAmountOfA(secondRow));
+const getRow = (firstRow, secondRow) => {
+    if (firstRow == null || secondRow == null) {
+        alert('The string(s) is not proper');
+        return null;
+    }
+    else if (getAmountOfA(firstRow) >= getAmountOfA(secondRow)) return firstRow;
+    else return secondRow;
+};
 
 const formatPhone = (n) => (/^\+[0-9]{11}$/.test(n))
     ? `+${n[1]} (${n[2]}${n[3]}${n[4]}) ${n[5]}${n[6]}${n[7]}-${n[8]}${n[9]}-${n[10]}${n[11]}`
