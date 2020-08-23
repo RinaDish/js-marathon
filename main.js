@@ -1,17 +1,66 @@
-const firstRow = 'мама мыла раму';
-const secondRow = 'собака друг человека';
+const $btn = document.getElementById('btn-kick');
+const $btnFatal = document.getElementById('btn-fatal');
 
-const phoneNumber = '+71234567890';
+const character = {
+    name: 'Pikachu',
+    defaultHP: 100,
+    damageHP: 100,
+    elHp: document.getElementById('health-character'),
+    elProgressbar: document.getElementById('progressbar-character')
+}
 
-const getAmountOfA = (string) => string.match(/(?:А|а)/g).length; //The behavior of /[Aa]/g is not expected. So strange =<
+const enemy = {
+    name: 'Charmander',
+    defaultHP: 100,
+    damageHP: 100,
+    elHp: document.getElementById('health-enemy'),
+    elProgressbar: document.getElementById('progressbar-enemy')
+}
 
-const getRow = (firstRow, secondRow) => (firstRow == null || secondRow == null)
-    ? alert('The string(s) is not proper') || null
-    : Math.max(getAmountOfA(firstRow), getAmountOfA(secondRow));
+$btn.addEventListener('click', function () {
+    changeHP(random(20), character);
+    changeHP(random(20), enemy);
+})
 
-const formatPhone = (n) => (/^\+[0-9]{11}$/.test(n))
-    ? `+${n[1]} (${n[2]}${n[3]}${n[4]}) ${n[5]}${n[6]}${n[7]}-${n[8]}${n[9]}-${n[10]}${n[11]}`
-    : alert('The number is not proper') || null;
+$btnFatal.addEventListener('click', function () { //You can use Fatality ones per game. Fatality damages character, enemy or nobody ransomly.
+    const fatality = Math.ceil(Math.random() * 3);
 
-console.log(getRow(firstRow, secondRow)); //First task
-console.log(formatPhone(phoneNumber)); //Second task
+    if (fatality === 1) changeHP(20, character);
+    else if (fatality === 2) changeHP(20, enemy);
+
+    $btnFatal.disabled = true;
+})
+
+function init() {
+    console.log('Start Game');
+    renderHP(character);
+    renderHP(enemy);
+}
+function renderHP(person) {
+    renderHPLife(person);
+    renderProgressbarHP(person);
+}
+
+function renderHPLife(person) {
+    person.elHp.innerText = person.damageHP + ' / ' + person.defaultHP;
+}
+
+function renderProgressbarHP(person) {
+    person.elProgressbar.style.width = person.damageHP + '%';
+}
+
+function changeHP(count, person) {
+    if (person.damageHP <= count) {
+        person.damageHP = 0;
+        $btn.disabled = true;
+        $btnFatal.disabled = true;
+        alert(person.name + ' lost =(')
+    } else person.damageHP -= count;
+
+    renderHP(person);
+}
+
+function random(num) {
+    return Math.ceil(Math.random() * num);
+}
+init();
