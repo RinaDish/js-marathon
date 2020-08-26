@@ -3,64 +3,64 @@ const $btnFatal = document.getElementById('btn-fatal');
 
 const character = {
     name: 'Pikachu',
-    defaultHP: 100,
-    damageHP: 100,
+    defaultHP: 150,
+    damageHP: 150,
     elHp: document.getElementById('health-character'),
-    elProgressbar: document.getElementById('progressbar-character')
+    elProgressbar: document.getElementById('progressbar-character'),
+    changeHP,
+    renderHP,
 }
 
 const enemy = {
     name: 'Charmander',
-    defaultHP: 100,
-    damageHP: 100,
+    defaultHP: 150,
+    damageHP: 150,
     elHp: document.getElementById('health-enemy'),
-    elProgressbar: document.getElementById('progressbar-enemy')
+    elProgressbar: document.getElementById('progressbar-enemy'),
+    changeHP,
+    renderHP,
 }
 
-$btn.addEventListener('click', function () {
-    changeHP(random(20), character);
-    changeHP(random(20), enemy);
+$btn.addEventListener('click', () => {
+    character.changeHP(random(20));
+    enemy.changeHP(random(20));
 })
 
-$btnFatal.addEventListener('click', function () { //You can use Fatality ones per game. Fatality damages character, enemy or nobody ransomly.
+$btnFatal.addEventListener('click', () => { //You can use Fatality ones per game. Fatality damages character, enemy or nobody ransomly.
     const fatality = Math.ceil(Math.random() * 3);
 
-    if (fatality === 1) changeHP(20, character);
-    else if (fatality === 2) changeHP(20, enemy);
+    if (fatality === 1) character.changeHP(20);
+    else if (fatality === 2) enemy.changeHP(20);
 
     $btnFatal.disabled = true;
 })
 
-function init() {
+const init = () => {
     console.log('Start Game');
-    renderHP(character);
-    renderHP(enemy);
-}
-function renderHP(person) {
-    renderHPLife(person);
-    renderProgressbarHP(person);
+    character.renderHP();
+    enemy.renderHP();
 }
 
-function renderHPLife(person) {
-    person.elHp.innerText = person.damageHP + ' / ' + person.defaultHP;
+function renderHP() {
+    this.elHp.innerText = this.damageHP + ' / ' + this.defaultHP;
+    this.elProgressbar.style.width = this.damageHP * (100 / this.defaultHP) + '%';
 }
 
-function renderProgressbarHP(person) {
-    person.elProgressbar.style.width = person.damageHP + '%';
-}
-
-function changeHP(count, person) {
-    if (person.damageHP <= count) {
-        person.damageHP = 0;
+function changeHP(count) {
+    if (this.damageHP <= count) {
+        this.damageHP = 0;
         $btn.disabled = true;
         $btnFatal.disabled = true;
-        alert(person.name + ' lost =(')
-    } else person.damageHP -= count;
+    } else this.damageHP -= count;
 
-    renderHP(person);
+    this.renderHP();
+    if (this.damageHP === 0) setTimeout(() => { //Alert doesn't work correctly without setTimeout
+        alert(this.name + ' lost =(')
+    }, 0);
 }
 
-function random(num) {
+const random = (num) => {
     return Math.ceil(Math.random() * num);
 }
+
 init();
