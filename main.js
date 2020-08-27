@@ -52,13 +52,14 @@ function changeHP(count) {
 
     this.renderHP();
 
-    const logStrings = this === enemy ? logs(this.name, character.name) : logs(this.name, enemy.name);
-    const log = `${logStrings[random(logStrings.length - 1)]} - ${count} [${this.damageHP}/${this.defaultHP}]`;
+    const { name, damageHP, defaultHP } = this;
+    const logStrings = this === enemy ? logs(name, character.name) : logs(name, enemy.name);
+    const log = `${logStrings[random(logStrings.length - 1)]} - ${count} [${damageHP}/${defaultHP}]`;
     addLog(log);
 
-    if (this.damageHP === 0) setTimeout(() => { //Alert doesn't work correctly without setTimeout
-        alert(this.name + ' lost =(')
-        addLog(`${this.name} lost =<`);
+    if (damageHP === 0) setTimeout(() => { //Alert doesn't work correctly without setTimeout
+        alert(name + ' lost =(')
+        addLog(`${name} lost =<`);
     }, 0);
 };
 
