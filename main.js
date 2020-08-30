@@ -1,7 +1,10 @@
 const $btn = document.getElementById('btn-kick');
 const $btnFatal = document.getElementById('btn-fatal');
+const $btnHeal = document.getElementById('btn-heal');
 const $log = document.createElement('p');
 const $body = document.querySelector('div.body');
+
+let disabledBtn = 0;
 
 const character = {
     name: 'Pikachu',
@@ -23,19 +26,56 @@ const enemy = {
     renderHP,
 };
 
+const disableButton = (button) => {
+    let count = 0;
+    return function (clickLimit) {
+        count += 1;
+        console.log(count);
+
+        if (count >= clickLimit) {
+            button.disabled = true
+            disabledBtn += 1;
+        };
+
+        if (disabledBtn === 3) endGame('Standoff')
+        addLog(`${button.innerText} - left ${clickLimit - count} click`)
+    }
+};
+
+const disableKick = disableButton($btn);
+const disableFatal = disableButton($btnFatal);
+const disableHeal = disableButton($btnHeal);
+
+const getRandomCharacter = () => {
+    const randomNum = random(3);
+
+    if (randomNum === 1) return character;
+    else if (randomNum === 2) return enemy;
+    else return;
+}
+
 $btn.addEventListener('click', () => {
     character.changeHP(random(20));
     enemy.changeHP(random(20));
+    disableKick(15);
 });
 
-$btnFatal.addEventListener('click', () => { //You can use Fatality ones per game. Fatality damages character, enemy or nobody ransomly.
-    const fatality = random(3);
+$btnFatal.addEventListener('click', () => { //You can use Fatality ones per game. Fatality damages character, enemy or nobody randomly.
+    const personage = getRandomCharacter();
 
-    if (fatality === 1) character.changeHP(20);
-    else if (fatality === 2) enemy.changeHP(20);
+    if (personage != undefined) personage.changeHP(20);
     else addLog('The kick missed -_-');
 
-    $btnFatal.disabled = true;
+    disableFatal(1);
+});
+
+$btnHeal.addEventListener('click', () => { //You can use Heal ones per game. It heal character, enemy or nobody randomly.
+    const personage = getRandomCharacter();
+
+    if (personage != undefined) personage.changeHP(-20);
+    else addLog('The heal missed -_-');
+
+    disableHeal(1);
 });
 
 function renderHP() {
@@ -46,9 +86,9 @@ function renderHP() {
 function changeHP(count) {
     if (this.damageHP <= count) {
         this.damageHP = 0;
-        $btn.disabled = true;
-        $btnFatal.disabled = true;
-    } else this.damageHP -= count;
+    }
+    else if (this.damageHP > this.defaultHP) this.damageHP = this.defaultHP
+    else this.damageHP -= count;
 
     this.renderHP();
 
@@ -57,11 +97,24 @@ function changeHP(count) {
     const log = `${logStrings[random(logStrings.length - 1)]} - ${count} [${damageHP}/${defaultHP}]`;
     addLog(log);
 
-    if (damageHP === 0) setTimeout(() => { //Alert doesn't work correctly without setTimeout
-        alert(name + ' lost =(')
-        addLog(`${name} lost =<`);
-    }, 0);
+    if (damageHP === 0) endGame(`${name} lost =<`);
 };
+
+const endGame = (log) => {
+    setTimeout(() => { //Alert doesn't work correctly without setTimeout
+        alert(`${log}\nGame over`);
+        addLog(log);
+        addLog('Game over');
+    }, 0);
+
+    if ($btn.disabled != true ||
+        $btnFatal.disabled != true ||
+        $btnHeal.disabled != true) {
+        $btn.disabled = true;
+        $btnFatal.disabled = true;
+        $btnHeal.disabled = true;
+    }
+}
 
 const random = (num) => Math.ceil(Math.random() * num);
 
@@ -88,7 +141,6 @@ const addLog = (logString) => {
 }
 
 const init = () => {
-    console.log('Start Game');
     character.renderHP();
     enemy.renderHP();
 
