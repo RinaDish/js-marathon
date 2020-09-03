@@ -8,7 +8,7 @@ class Selectors {
 };
 
 export default class Pokemon extends Selectors {
-    constructor({ name, hp, type, selectors }) {
+    constructor({ name, hp, type, selectors, attacks = [], img }) {
         super(selectors);
 
         this.name = name;
@@ -17,13 +17,18 @@ export default class Pokemon extends Selectors {
             total: hp,
         };
         this.type = type;
+        this.attacks = attacks;
+        this.img = img;
 
         this.renderHP();
     }
 
     renderHP = () => {
+        const perc = this.hp.current * (100 / this.hp.total);
         this.elHp.innerText = this.hp.current + ' / ' + this.hp.total;
-        this.elProgressbar.style.width = this.hp.current * (100 / this.hp.total) + '%';
+        this.elProgressbar.style.width = perc + '%';
+        if (perc < 60 && perc > 20) this.elProgressbar.setAttribute('class', 'health low')
+        if (perc < 20 && perc > 0) this.elProgressbar.setAttribute('class', 'health critical')
     };
 
     changeHP = (count) => {
@@ -38,6 +43,6 @@ export default class Pokemon extends Selectors {
         addLog(log);
 
 
-        if (this.hp.current === 0) endGame(`${name} lost =<`);
+        if (this.hp.current === 0) endGame(`${this.name} lost =<`);
     }
 };
