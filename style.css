@@ -45,22 +45,10 @@ body {
   justify-content: center;
   align-items: center;
   display: flex;
-  /* flex-wrap: wrap; */
-  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  /* flex-direction: row; */
 }
-
-#attackPlayers1 #attackPlayers2 {
-    width: 320px;
-    height: 260px;
-    position: relative;
-    margin: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    /* flex-wrap: wrap; */
-    flex-direction: column;
-  }
 
 .playground {
   max-width: 1024px;
