@@ -1,23 +1,42 @@
-import { player1, player2 } from './players.js'
-import { generatePlayers, btnController } from './utils.js'
+import { generatePlayers, btnController, addLog } from './utils.js'
+import Pokemon from './pokemon.js'
 
-const $attackPlayers1 = document.querySelector('#attackPlayers1');
-const $attackPlayers2 = document.querySelector('#attackPlayers2');
+class Game {
+    getPokemons = async () => {
+        const responce = await fetch('https://reactmarathon-api.netlify.app/api/pokemons?random=true');
+        const body = await responce.json();
+        return body;
+    };
 
-player1.attacks.forEach(attack => btnController(attack, $attackPlayers1, player2))
-player2.attacks.forEach(attack => btnController(attack, $attackPlayers2, player1))
+    start = async () => {
+        addLog('Start Fighting!');
 
-const init = () => {
-    generatePlayers();
+        const pokemon1 = await this.getPokemons();
+        const pokemon2 = await this.getPokemons();
 
-    const $body = document.querySelector('div.body');
-    const $chronicle = document.createElement('h3');
-    const $start = document.createElement('p');
+        const player1 = new Pokemon({
+            ...pokemon1,
+            selectors: 'player1',
+        });
 
-    $chronicle.innerText = 'Chronicle';
-    $body.appendChild($chronicle);
-    $start.innerText = 'Start Fighting!';
-    $body.appendChild($start);
-};
+        const player2 = new Pokemon({
+            ...pokemon2,
+            selectors: 'player2',
+        });
 
-init();
+        generatePlayers(player1, player2);
+        player1.attacks.forEach(attack => btnController(attack, player1, player2));
+    }
+
+    endGame = (log) => {
+        addLog(log);
+        addLog('Game over');
+
+        const allButtons = document.querySelectorAll('.control .button');
+        allButtons.forEach($item => $item.remove());
+        game.start();
+    };
+}
+
+export const game = new Game();
+game.start();
